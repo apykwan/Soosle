@@ -12,7 +12,7 @@
   <div class="wrapper indexPage">
     <section class="mainSection">
       <div class="logoContainer">
-        <img src="https://www.google.com/logos/doodles/2025/celebrating-cherry-blossom-season-copy-6753651837110757-law.gif">
+        <img src="assets/images/soosle_logo.png">
       </div>
 
       <div class="searchContainer">
