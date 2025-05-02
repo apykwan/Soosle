@@ -4,6 +4,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Search the web for sites and images">
+  <meta name="keywords" content="Search engine, soosle, websites">
+  <meta name="author" content="apkwan">
+
   <link rel="stylesheet" type="text/css" href="assets/css/style.css">
   <title>Welcome to Soosle</title>
 </head>

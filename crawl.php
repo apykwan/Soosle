@@ -6,6 +6,9 @@ require __DIR__ . '/vendor/autoload.php';
 
 use App\DomDocumentParser;
 
+$alreadyCrawled = [];
+$crawling = [];
+
 /**
  *  filter links
  *  //www.example.com => http://www.example.com
@@ -37,12 +40,47 @@ function createLink(string $src, string $url)
   return $src;
 }
 
+function getDetails(string $url)
+{
+  $parser = new DomDocumentParser($url);
+  $titleArray = $parser->getTitleTags();
+
+  if (sizeof($titleArray) == 0 || $titleArray->item(0) == null) return;
+
+  $title = $titleArray->item(0)->nodeValue;
+  $title = str_replace("\n", "", $title);
+
+  if ($title == "") return;
+
+  $description = "";
+  $keywords = "";
+
+  $metasArray = $parser->getMetaTags();
+
+  foreach($metasArray as $meta) {
+    if ($meta->getAttribute('name') == 'description') {
+      $description = $meta->getAttribute('content');
+    }
+
+    if ($meta->getAttribute('name') == 'keywords') {
+      $keywords = $meta->getAttribute('content');
+    }
+  }
+
+  $description = str_replace('\n', '', $description);
+  $keywords = str_replace('\n', '', $keywords);
+
+  echo "Url: {$url}, Description: {$description}, Keyword: {$keywords} <br>";
+}
+
 function followLinks(string $url) 
 {
+  global $alreadyCrawled;
+  global $crawling;
+
   $parser = new DomDocumentParser($url);
 
   $linkList = $parser->getLinks();
-
   foreach ($linkList as $link) {
     $href = $link->getAttribute('href');
 
@@ -53,9 +91,21 @@ function followLinks(string $url)
     }
 
     $href = createLink($href, $url);
-    echo "{$href} <br>";
+
+    if (!in_array($href, $alreadyCrawled)) {
+      $alreadyCrawled[] = $href;
+      $crawling[] = $href;
+
+      getDetails($href);
+    }
+    else return;
+  }
+  array_shift($crawling);
+
+  foreach($crawling as $site) {
+    followLinks($site);
   }
 }
 
-$startUrl = "http://apple.com";
+$startUrl = "http://ccyp.com";
 followLinks($startUrl);
