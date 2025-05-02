@@ -4,10 +4,23 @@ declare(strict_types=1);
 
 require __DIR__ . '/vendor/autoload.php';
 
-use App\DomDocumentParser;
+use App\{DomDocumentParser, Database};
 
 $alreadyCrawled = [];
 $crawling = [];
+
+function insertLink(string $url, string $title, string $description, string $keywords)
+{
+  $con = Database::getInstance()->getConnection();
+
+  $sql = 'INSERT INTO sites(url, title, description, keywords) VALUES(:url, :title, :description, :keywords)';
+  $query = $con->prepare($sql);
+  $query->bindParam(':url', $url);
+  $query->bindParam(':title', $title);
+  $query->bindParam(':description', $description);
+  $query->bindParam(':keywords', $keywords);
+  return $query->execute();
+}
 
 /**
  *  filter links
@@ -70,7 +83,7 @@ function getDetails(string $url)
   $description = str_replace('\n', '', $description);
   $keywords = str_replace('\n', '', $keywords);
 
-  echo "Url: {$url}, Description: {$description}, Keyword: {$keywords} <br>";
+  insertLink($url, $title, $description, $keywords);
 }
 
 function followLinks(string $url) 
