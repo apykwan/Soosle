@@ -1,0 +1,10 @@
+{
+    "name": "andykwan/soosle",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "App\\": "classes/"
+        }
+    },
+    "require": {}
+}
