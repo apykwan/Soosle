@@ -173,5 +173,5 @@ function followLinks(string $url)
   }
 }
 
-$startUrl = "http://chineseinla.com";
+$startUrl = "http://bestbuy.com";
 followLinks($startUrl);

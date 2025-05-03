@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
+use App\SiteResultsProvider;
+
 if (isset($_GET['term'])) {
   $term = $_GET['term'];
   echo $term;
@@ -27,7 +29,7 @@ $type = isset($_GET['type']) ? $_GET['type'] : 'sites';
 
 <body>
   <div class="wrapper">
-    <div class="header">
+    <header class="header">
       <div class="headerContent">
         <div class="logoContainer">
           <a href="index.php">
@@ -57,7 +59,14 @@ $type = isset($_GET['type']) ? $_GET['type'] : 'sites';
             </li>
         </ul>
       </div>
-    </div>
+    </header>
+
+    <section class="mainResultSection">
+      <?php
+        $resultsProvider = new SiteResultsProvider;
+        echo $resultsProvider->getNumResults($term);
+      ?>
+    </section>
   </div>
 </body>
 
