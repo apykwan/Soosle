@@ -8,7 +8,7 @@ use App\SiteResultsProvider;
 
 if (isset($_GET['term'])) {
   $term = $_GET['term'];
-  echo $term;
+  
 } else {
   exit("you must enter search term");
 }
@@ -40,7 +40,7 @@ $type = isset($_GET['type']) ? $_GET['type'] : 'sites';
         <div class="searchContainer">
           <form action="search.php" method="GET">
             <div class="searchBarContainer">
-              <input class="searchBox" type="text" name="term">
+              <input class="searchBox" type="text" name="term" value="<?php echo $term; ?>">
               <button class="searchButton">
                 <img src="assets/images/search_icon.png">
               </button>
@@ -64,7 +64,12 @@ $type = isset($_GET['type']) ? $_GET['type'] : 'sites';
     <section class="mainResultSection">
       <?php
         $resultsProvider = new SiteResultsProvider;
-        echo $resultsProvider->getNumResults($term);
+        $numResults = $resultsProvider->getNumResults($term);
+        $s = $numResults > 1 ? 's' : '';
+
+        echo "<p class='resultsCount'>{$numResults} result{$s} found</p>";
+
+        echo $resultsProvider->getResultsHtml(1, 20, $term);
       ?>
     </section>
   </div>
