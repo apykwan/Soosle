@@ -8,6 +8,7 @@ use App\{DomDocumentParser, Database};
 
 $alreadyCrawled = [];
 $crawling = [];
+$alreadyFoundImages = [];
 
 function insertLink(string $url, string $title, string $description, string $keywords)
 {
@@ -20,6 +21,31 @@ function insertLink(string $url, string $title, string $description, string $key
   $query->bindParam(':description', $description);
   $query->bindParam(':keywords', $keywords);
   return $query->execute();
+}
+
+function linkExists(string $url)
+{
+  $con = Database::getInstance()->getConnection();
+
+  $sql = 'SELECT * from sites WHERE url = :url';
+  $query = $con->prepare($sql);
+  $query->bindParam(':url', $url);
+  $query->execute();
+
+  return $query->rowCount(); 
+}
+
+function insertImages(string $siteUrl, string $imageUrl, string $alt, string $title)
+{
+  $con = Database::getInstance()->getConnection();
+
+  $sql = 'INSERT INTO images(siteUrl, imageUrl, alt, title) VALUES(:siteUrl, :imageUrl, :alt, :title)';
+  $query = $con->prepare($sql);
+  $query->bindParam(':siteUrl', $siteUrl);
+  $query->bindParam(':imageUrl', $imageUrl);
+  $query->bindParam(':alt', $alt);
+  $query->bindParam(':title', $title);
+  $query->execute();
 }
 
 /**
@@ -55,6 +81,8 @@ function createLink(string $src, string $url)
 
 function getDetails(string $url)
 {
+  global $alreadyFoundImages;
+
   $parser = new DomDocumentParser($url);
   $titleArray = $parser->getTitleTags();
 
@@ -69,7 +97,6 @@ function getDetails(string $url)
   $keywords = "";
 
   $metasArray = $parser->getMetaTags();
-
   foreach($metasArray as $meta) {
     if ($meta->getAttribute('name') == 'description') {
       $description = $meta->getAttribute('content');
@@ -83,7 +110,33 @@ function getDetails(string $url)
   $description = str_replace('\n', '', $description);
   $keywords = str_replace('\n', '', $keywords);
 
-  insertLink($url, $title, $description, $keywords);
+  if (linkExists($url)) {
+    echo "{$url} alraedy exists!<br>";
+  }
+  else if (insertLink($url, $title, $description, $keywords)) {
+    echo "SUCCESS: {$url} <br>";
+  } 
+  else {
+    echo "ERROR: Failed to insert {$url} <br>";
+  }
+
+  $imageArray = $parser->getImages();
+  foreach($imageArray as $image) {
+    $src = $image->getAttribute('src');
+    $alt = $image->getAttribute('alt');
+    $title = $image->getAttribute('title');
+
+    if (!$title && !$alt) continue;
+
+    $src = createLink($src, $url);
+
+    if (!in_array($src, $alreadyFoundImages)) {
+      $alreadyFoundImages[] = $src;
+
+      // Insert the image
+      insertImages($url, $src, $alt, $title);
+    }
+  }
 }
 
 function followLinks(string $url) 
@@ -120,5 +173,5 @@ function followLinks(string $url)
   }
 }
 
-$startUrl = "http://ccyp.com";
+$startUrl = "http://chineseinla.com";
 followLinks($startUrl);

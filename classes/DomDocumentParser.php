@@ -15,11 +15,16 @@ class DomDocumentParser
         'header' => 'User-Agent: soosleBot/0.1\n'
       ],
     ];
-
     $context = stream_context_create($options);
 
+    $htmlContent = file_get_contents($url, false, $context);
+    if ($htmlContent === false) {
+      echo "Failed to retrieve HTML content";
+      return;
+    }
+
     $this->doc = new \DomDocument();
-    @$this->doc->loadHTML(file_get_contents($url, false, $context));
+    @$this->doc->loadHTML($htmlContent);
   }
 
   public function getlinks() 
@@ -32,7 +37,13 @@ class DomDocumentParser
     return $this->doc->getElementsByTagName("title");
   }
 
-  public function getMetaTags() {
+  public function getMetaTags() 
+  {
     return $this->doc->getElementsByTagName('meta');
+  }
+
+  public function getImages() 
+  {
+    return $this->doc->getElementsByTagName('img');
   }
 }
