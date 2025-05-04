@@ -19,8 +19,8 @@ class SiteResultsProvider {
     FROM sites 
     WHERE title LIKE :term OR url LIKE :term OR keywords LIKE :term OR description LIKE :term
     SQL;
-    $query = $this->con->prepare($sql);
 
+    $query = $this->con->prepare($sql);
     $query->bindValue(":term", "%{$term}%", \PDO::PARAM_STR);
     $query->execute();
 
@@ -30,15 +30,21 @@ class SiteResultsProvider {
 
   public function getResultsHtml(int $page, int $pageSize, string $term) 
   {
+    $fromLimit = ($page - 1) * $pageSize;
+
+
     $sql = <<<SQL
     SELECT *
     FROM sites 
     WHERE title LIKE :term OR url LIKE :term OR keywords LIKE :term OR description LIKE :term
     ORDER BY clicks DESC
+    LIMIT :fromLimit, :pageSize
     SQL;
-    $query = $this->con->prepare($sql);
 
+    $query = $this->con->prepare($sql);
     $query->bindValue(":term", "%{$term}%", \PDO::PARAM_STR);
+    $query->bindParam(":fromLimit", $fromLimit, \PDO::PARAM_INT);
+    $query->bindParam(":pageSize", $pageSize, \PDO::PARAM_INT);
     $query->execute();
 
     $resultsHtml = "<div class='siteResults'>";
@@ -70,6 +76,6 @@ class SiteResultsProvider {
   {
     $dots = strlen($string) > $characterLimit ? '...' : '';
 
-    return substr($string, 0, $characterLimit);
+    return substr($string, 0, $characterLimit) . $dots;
   }
 }

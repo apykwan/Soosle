@@ -8,12 +8,12 @@ use App\SiteResultsProvider;
 
 if (isset($_GET['term'])) {
   $term = $_GET['term'];
-  
 } else {
   exit("you must enter search term");
 }
 
 $type = isset($_GET['type']) ? $_GET['type'] : 'sites';
+$page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
 
 ?>
 
@@ -56,22 +56,73 @@ $type = isset($_GET['type']) ? $_GET['type'] : 'sites';
           </li>
           <li class='<?php echo $type == "images" ? 'active' : ''; ?>'>
             <a href='<?php echo "search.php?term={$term}&type=images"; ?>'>Images</a>
-            </li>
+          </li>
         </ul>
       </div>
     </header>
 
-    <section class="mainResultSection">
+    <main class="mainResultSection">
       <?php
-        $resultsProvider = new SiteResultsProvider;
-        $numResults = $resultsProvider->getNumResults($term);
-        $s = $numResults > 1 ? 's' : '';
+      $resultsProvider = new SiteResultsProvider;
+      $pageSize = 20;
 
-        echo "<p class='resultsCount'>{$numResults} result{$s} found</p>";
+      $numResults = $resultsProvider->getNumResults($term);
+      $s = $numResults > 1 ? 's' : '';
 
-        echo $resultsProvider->getResultsHtml(1, 20, $term);
+      echo "<p class='resultsCount'>{$numResults} result{$s} found</p>";
+
+      echo $resultsProvider->getResultsHtml($page, $pageSize, $term);
       ?>
-    </section>
+    </main>
+
+    <footer class="paginationContainer">
+      <div class="pageButtons">
+        <div class="pageNumberContainer">
+          <img src="assets/images/pageStart.png">
+        </div>
+
+        <?php
+          $pagesToShow = 10;
+          $totalPages = ceil($numResults / $pageSize);
+          $pagesToRender = min($pagesToShow, $totalPages);
+
+          $startingPage = max(1, $page - floor($pagesToShow / 2));
+
+          if ($startingPage + $pagesToRender > $totalPages + 1) {
+            $startingPage = $totalPages + 1 - $pagesToRender;
+          }
+
+          $currentRenderPage = $startingPage;
+
+          while ($pagesToRender > 0 && $currentRenderPage <= $totalPages){
+            if ($currentRenderPage == $page) {
+              echo "
+                <div class='pageNumberContainer'>
+                  <img src='assets/images/pageSelected.png'>
+                  <span class='pageNumber'>{$currentRenderPage}</span>
+                </div>
+              ";
+            } else {
+            echo "
+                <div class='pageNumberContainer'>
+                  <a href='search.php?term={$term}&type={$type}&page={$currentRenderPage}'>
+                    <img src='assets/images/page.png'>
+                    <span class='pageNumber'>{$currentRenderPage}</span>
+                  </a>
+                </div>
+              ";
+            }
+            
+            $currentRenderPage++;
+            $pagesToRender--;
+          }
+        ?>
+
+        <div class="pageNumberContainer">
+          <img src="assets/images/pageEnd.png">
+        </div>
+      </div>
+    </footer>
   </div>
 </body>
 
