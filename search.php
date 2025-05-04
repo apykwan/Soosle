@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use App\SiteResultsProvider;
+use App\{SiteResultsProvider, ImageResultsProvider};
 
 if (isset($_GET['term'])) {
   $term = $_GET['term'];
@@ -65,8 +65,13 @@ $page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
 
     <main class="mainResultSection">
       <?php
-      $resultsProvider = new SiteResultsProvider;
-      $pageSize = 20;
+      if ($type == 'sites') {
+        $resultsProvider = new SiteResultsProvider;
+        $pageSize = 20;
+      } else {
+        $resultsProvider = new ImageResultsProvider;
+        $pageSize = 30;
+      }
 
       $numResults = $resultsProvider->getNumResults($term);
       $s = $numResults > 1 ? 's' : '';
