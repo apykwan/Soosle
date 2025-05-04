@@ -24,6 +24,7 @@ $page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" type="text/css" href="assets/css/style.css">
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
   <title>Welcome to Soosle</title>
 </head>
 
@@ -40,6 +41,7 @@ $page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
         <div class="searchContainer">
           <form action="search.php" method="GET">
             <div class="searchBarContainer">
+              <input type="hidden" name="type" value="<?php echo $type ?>">
               <input class="searchBox" type="text" name="term" value="<?php echo $term; ?>">
               <button class="searchButton">
                 <img src="assets/images/search_icon.png">
@@ -82,27 +84,27 @@ $page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
         </div>
 
         <?php
-          $pagesToShow = 10;
-          $totalPages = ceil($numResults / $pageSize);
-          $pagesToRender = min($pagesToShow, $totalPages);
+        $pagesToShow = 10;
+        $totalPages = ceil($numResults / $pageSize);
+        $pagesToRender = min($pagesToShow, $totalPages);
 
-          $startingPage = max(1, $page - floor($pagesToShow / 2));
+        $startingPage = max(1, $page - floor($pagesToShow / 2));
 
-          if ($startingPage + $pagesToRender > $totalPages + 1) {
-            $startingPage = $totalPages + 1 - $pagesToRender;
-          }
+        if ($startingPage + $pagesToRender > $totalPages + 1) {
+          $startingPage = $totalPages + 1 - $pagesToRender;
+        }
 
-          $currentRenderPage = $startingPage;
+        $currentRenderPage = $startingPage;
 
-          while ($pagesToRender > 0 && $currentRenderPage <= $totalPages){
-            if ($currentRenderPage == $page) {
-              echo "
+        while ($pagesToRender > 0 && $currentRenderPage <= $totalPages) {
+          if ($currentRenderPage == $page) {
+            echo "
                 <div class='pageNumberContainer'>
                   <img src='assets/images/pageSelected.png'>
                   <span class='pageNumber'>{$currentRenderPage}</span>
                 </div>
               ";
-            } else {
+          } else {
             echo "
                 <div class='pageNumberContainer'>
                   <a href='search.php?term={$term}&type={$type}&page={$currentRenderPage}'>
@@ -111,11 +113,11 @@ $page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
                   </a>
                 </div>
               ";
-            }
-            
-            $currentRenderPage++;
-            $pagesToRender--;
           }
+
+          $currentRenderPage++;
+          $pagesToRender--;
+        }
         ?>
 
         <div class="pageNumberContainer">
@@ -124,6 +126,8 @@ $page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
       </div>
     </footer>
   </div>
+
+  <script type="module" src="assets/js/script.js"></script>
 </body>
 
 </html>

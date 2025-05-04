@@ -61,7 +61,7 @@ class SiteResultsProvider {
       $resultsHtml .= "
         <div class='resultContainer'>
           <h3 class='title'>
-            <a class='result' href='{$url}' target='_blank'>{$title}</a>
+            <a class='result' href='{$url}' target='_blank' data-linkId='{$id}'>{$title}</a>
           </h3>
           <span class='url'>{$url}</span>
           <span class='description'>{$description}</span>
