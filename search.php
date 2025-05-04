@@ -132,6 +132,7 @@ $page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
     </footer>
   </div>
 
+  <script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>
   <script type="module" src="assets/js/script.js"></script>
 </body>
 

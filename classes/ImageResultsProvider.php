@@ -47,9 +47,11 @@ class ImageResultsProvider
     $query->bindParam(":pageSize", $pageSize, \PDO::PARAM_INT);
     $query->execute();
 
-    $resultsHtml = "<div class='siteResults'>";
+    $resultsHtml = "<div class='imageResults'>";
 
+    $count = 0;
     while ($row = $query->fetch()) {
+      $count++;
       $id = $row["id"];
       $imageUrl = $row["imageUrl"];
       $siteUrl = $row["siteUrl"];
@@ -66,8 +68,12 @@ class ImageResultsProvider
 
       $resultsHtml .= "
         <div class='gridItem'>
-          <a href='{$imageUrl}'>
-            <img src='{$imageUrl}' >
+          <a 
+            href='{$imageUrl}' 
+            class='imageLink img{$count}' 
+            data-img='{$imageUrl}' 
+          >
+            <span class='details'>{$displayText}</span>
           </a>
         </div>
       ";
