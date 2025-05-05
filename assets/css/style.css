@@ -266,4 +266,5 @@ a .pageNumber {
 
 .gridItem:hover .details {
   visibility: visible;
+  opacity: 0.85;
 }

@@ -71,7 +71,10 @@ class ImageResultsProvider
           <a 
             href='{$imageUrl}' 
             class='imageLink img{$count}' 
-            data-img='{$imageUrl}' 
+            data-img='{$imageUrl}'
+            data-fancybox
+            data-caption='{$displayText}'
+            data-siteurl='{$siteUrl}'
           >
             <span class='details'>{$displayText}</span>
           </a>

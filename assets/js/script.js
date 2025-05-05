@@ -1,4 +1,4 @@
-let timer;
+let timer, grid;
 
 $(document).ready(function() {
   $(".result").on("click", function () {
@@ -17,20 +17,37 @@ $(document).ready(function() {
     loadImages($(this).data('img'), className);
   });
 
-  const grid = $('.imageResults').masonry();
-
-  grid.on('layoutComplete', function() {
-    $('.gridItem img').css('visibility', 'visible');
-  });
-
-  grid.masonry({
+  grid = $('.imageResults').masonry({
     itemSelector: ".gridItem",
     columnWidth: 200,
     gutter: 5,
     isInitLayout: false
   });
-});
 
+  grid.on('layoutComplete', function() {
+    $('.gridItem img').css('visibility', 'visible');
+  });
+
+  $("[data-fancybox]").fancybox({
+    caption: function(instance, item) {
+      let caption = $(this).data('caption') || '';
+      const siteUrl = $(this).data('siteurl') || '';
+
+      if (item.type === 'image') {
+        caption = (caption.length ? `${caption} <br />` : '') + `
+          <a href='${item.src}' target='_blank'>View image</a>
+          <br />
+          <a href='${siteUrl}'>Visit page</a>
+        `;
+      }
+
+      return caption;
+    },
+    afterShow: function (instance, item) {
+      increaseImageClicks(item.src);
+    }
+  });
+});
 
 function loadImages(src, className) {
   // create img tag
@@ -42,7 +59,7 @@ function loadImages(src, className) {
     clearTimeout(timer);
 
     timer = setTimeout(function() {
-      $('.imageResults').masonry();
+      grid.masonry();
     }, 500);
   });
 
@@ -68,3 +85,13 @@ function increaseLinkClicks(linkId, url) {
     });
 }
 
+function increaseImageClicks(imageUrl) {
+  $
+    .post('ajax/updateImageCount.php', { imageUrl })
+    .done(function(result) {
+      if (result !== '') {
+        alert(result);
+        return;
+      }
+    });
+}
